@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trigger APK Build</title>
+</head>
+<body>
+    <h1>Build APK</h1>
+    <form id="buildForm">
+        <label for="branch">Select Branch:</label>
+        <input type="text" id="branch" value="main" required>
+        <br><br>
+        
+        <label for="flavor">Choose Flavor:</label>
+        <select id="flavor">
+            <option value="release">Release</option>
+            <option value="debug">Debug</option>
+        </select>
+        <br><br>
+
+        <button type="submit">Build APK</button>
+    </form>
+
+    <h2>Download APK</h2>
+    <button id="downloadButton" style="display:none;">Download APK</button>
+
+    <script>
+        document.getElementById('buildForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const branch = document.getElementById('branch').value;
+            const flavor = document.getElementById('flavor').value;
+
+            fetch('https://api.github.com/repos/yourusername/yourrepo/actions/workflows/build.yml/dispatches', {
+                method: 'POST',
+                headers: {
+                    'Authorization': 'Bearer YOUR_GITHUB_TOKEN',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    ref: branch,  // Using the selected branch
+                    inputs: { flavor: flavor }
+                })
+            }).then(response => {
+                if (response.ok) {
+                    alert('Build triggered! Please wait for it to complete.');
+                } else {
+                    alert('Error triggering build.');
+                }
+            });
+        });
+
+        // Fetch the download link after the build finishes (optional)
+        // This step requires extra logic for webhook or polling
+    </script>
+</body>
+</html>
